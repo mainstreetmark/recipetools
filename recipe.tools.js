@@ -35,7 +35,7 @@ function GetAmount (amount) {
 	return false
 }
 
-function GetSize (bit) {
+function GetModifier (bit) {
 	var sizes = {
 		large: ['Large', 'large', 'lg'],
 		medium: ['medium', 'med', 'md'],
@@ -47,7 +47,12 @@ function GetSize (bit) {
 		torn: ['torn'],
 		fresh: ['fresh'],
 		grated: ['grateds'],
-		toasted: ['toasted']
+		toasted: ['toasted'],
+		cool: ['cool'],
+		cold: ['cold'],
+		lukewarm: ['lukewarm'],
+		warm: ['warm'],
+		hot: ['hot']
 	}
 	for (var size in sizes) {
 		if (sizes[size].indexOf(bit.toLowerCase()) > -1) { return size }
@@ -122,8 +127,8 @@ function ParseIngredient (line, hideorginal = false) {
 		} else if (GetUnit(bit)) {
 			out.unit = GetUnit(bit)
 			foundamount = true
-		} else if (GetSize(bit)) {
-			out.notes = out.notes.length ? GetSize(bit) + ', ' + out.notes : GetSize(bit)
+		} else if (GetModifier(bit)) {
+			out.notes = out.notes.length ? GetModifier(bit) + ', ' + out.notes : GetModifier(bit)
 		} else { out.ingredient += bit + ' ' }
 	}
 	out.notes = out.notes.toLowerCase()
