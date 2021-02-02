@@ -2,12 +2,26 @@
 // Convert amounts to reals
 // GetAmount("1/2") => 0.5
 function GetAmount (amount) {
-	console.log(amount)
 	if (amount.indexOf('/') > 0) {
 		var fraction = amount.split('/')
 		amount = fraction[0] / fraction[1]
 	}
-	if (amount > 0) { console.log('!!'); return Number(amount) } else { console.log('??', amount) }
+	if (amount > 0) { return Number(amount) }
+	return false
+}
+
+function GetSize (bit) {
+	var sizes = {
+		large: ['Large', 'large', 'lg'],
+		medium: ['Medium', 'medium', 'med', 'md'],
+		small: ['Small', 'sm'],
+		whole: ['whole'],
+		dried: ['dried'],
+		boneless: ['boneless']
+	}
+	for (var size in sizes) {
+		if (sizes[size].indexOf(bit.toLowerCase()) > -1) { return size }
+	}
 	return false
 }
 
@@ -22,7 +36,15 @@ function GetUnit (bit) {
 		oz: ['ounces', 'ounce', 'oz'],
 		g: ['gram', 'grams', 'g'],
 		kg: ['kilogram', 'kilograms', 'kg'],
-		mg: ['miligram', 'miligrams', 'mg']
+		mg: ['miligram', 'miligrams', 'mg'],
+		clove: ['clove', 'cloves'],
+		pinch: ['pinch'],
+		sprig: ['sprig', 'sprigs'],
+		qt: ['quart', 'quarts', 'qt', 'qts'],
+		slice: ['slice', 'slices'],
+		bunch: ['bunch'],
+		stalk: ['stalk'],
+		head: ['head']
 	}
 	for (var unit in units) {
 		if (units[unit].indexOf(bit.toLowerCase()) > -1) { return unit }
@@ -34,7 +56,7 @@ function GetUnit (bit) {
 // FormatIngredient("cream of tartar") => "Cream of Tartar"
 function FormatIngredient (bit) {
 	var out = bit.trim().replace(/\b\w/g, l => l.toUpperCase())
-	out = out.replace('Or', 'or').replace('And', 'and')
+	out = out.replace('Or', 'or').replace('And', 'and').replace('To', 'to').replace(/^Of /, '')
 	return out
 }
 
@@ -42,11 +64,11 @@ function FormatIngredient (bit) {
 // ParseIngredients("1 cup of flour") => { amount:1, unit: "cup", ingredient:"flour"}
 function ParseIngredient (line) {
 	var out = {
-		orig: '',
 		amount: 0,
 		unit: '',
 		ingredient: '',
-		notes: ''
+		notes: '',
+		orig: ''
 	}
 	line = line.trim()
 	out.orig = line
@@ -63,8 +85,11 @@ function ParseIngredient (line) {
 			out.amount += GetAmount(bit)
 		} else if (GetUnit(bit)) {
 			out.unit = GetUnit(bit)
+		} else if (GetSize(bit)) {
+			out.notes = GetSize(bit) + ' ' + out.notes
 		} else { out.ingredient += bit + ' ' }
 	}
+	out.notes = out.notes.toLowerCase()
 	out.ingredient = FormatIngredient(out.ingredient)
 	return out
 }
