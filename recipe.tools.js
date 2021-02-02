@@ -115,6 +115,7 @@ function ParseIngredient (line, hideorginal = false) {
 	out.orig = line
 	// remove parenthases
 	line = line.replace(/\([^)]*\)/g, '')
+	line = line.replace(/^A /i, '1 ')
 
 	var parts = line.split(',')
 	var part = parts.shift()
