@@ -1,3 +1,6 @@
+// Convert decimal values to fractions
+// ValToFrac(0.33) => '⅓'
+// ValToFrac(0.33, true) => '1/3'
 function ValToFrac (val, plain = false) {
 	let rem = val % 1
 	let whole = Number(val - rem)
