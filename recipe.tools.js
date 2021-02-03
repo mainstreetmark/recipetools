@@ -1,3 +1,5 @@
+const COMPOUND_SYMBOL = '!&!'
+
 // Convert decimal values to fractions
 // ValToFrac(0.33) => '⅓'
 // ValToFrac(0.33, true) => '1/3'
@@ -77,7 +79,14 @@ function GetModifier (bit) {
 		warm: ['warm'],
 		hot: ['hot'],
 		uncooked: ['uncooked'],
-		raw: ['raw']
+		raw: ['raw'],
+		rinsed: ['rinsed'],
+		ripe: ['ripe'],
+		cooked: ['cooked'],
+		chopped: ['chopped'],
+		homemade: ['homemade'],
+		'store-bought': ['store-bought'],
+		picked: ['picked']
 	}
 	for (var size in sizes) {
 		if (sizes[size].indexOf(bit.toLowerCase()) > -1) { return size }
@@ -107,7 +116,10 @@ function GetUnit (bit) {
 		stick: ['stick'],
 		handful: ['handful'],
 		bag: ['bag', 'bags'],
-		can: ['can', 'cans']
+		can: ['can', 'cans'],
+		feet: ['feet', 'foot'], // like sausage casings
+		leaf: ['leaf', 'leaves'],
+		clove: ['clove', 'cloves']
 	}
 	for (var unit in units) {
 		if (units[unit].indexOf(bit.toLowerCase()) > -1) { return unit }
@@ -115,11 +127,17 @@ function GetUnit (bit) {
 	return false
 }
 
+// Adds an S where appropriate.  Most things don't pluralize.
+// PluralUnit('cup') => 'cups'
+// PluralUnit('kg') => 'kg'
 function PluralUnit (unit, amount = 1) {
 	var units = {
 		cup: 'cups',
 		lb: 'lbs',
-		slice: 'slices'
+		slice: 'slices',
+		leaf: 'leaves',
+		sprig: 'sprigs',
+		clove: 'cloves'
 	}
 	return amount > 1 ? (units[unit] || unit) : unit
 }
@@ -130,10 +148,21 @@ function FormatIngredient (bit) {
 	var out = bit.trim().replace(/\b\w/g, l => l.toUpperCase())
 	var lower = ['Or ', 'And ', 'Of ', 'To ', 'From ', 'For ']
 	for (var l of lower) { out = out.replace(l, l.toLowerCase()) }
-	out = out.replace(/^of /, '')
+	out = out.replace(/^of /, '').replace(/^or /, '')
 	return out
 }
 
+// Combines compound ingredient names, so they don't get split up.  ONLY if some of their parts would get replaced by other bits,
+// such as 'ground', which is a modifier or 'leaf' which is a unit.
+// FindCompounds("ground beef") => "ground%%beef" (which can later be replaced back wiht a space character)
+function FindCompounds (line) {
+	var compounds = ['ground beef', 'bay leaf', 'bay leaves']
+	// TODO - maybe use map() for this work
+	for (var c of compounds) {
+		line = line.replace(new RegExp(c, 'gi'), c.replace(' ', COMPOUND_SYMBOL))
+	}
+	return line
+}
 // Extract parts of ingredients
 // ParseIngredients("1 cup of flour") => { amount:1, unit: "cup", ingredient:"flour"}
 function ParseIngredient (line, hideorginal = false) {
@@ -147,9 +176,19 @@ function ParseIngredient (line, hideorginal = false) {
 	}
 	line = line.trim()
 	out.orig = line
+
+	// promote (optional) to something that sticks around
+	line = line.replace('(optional)', ', optional')
 	// remove parenthases
 	line = line.replace(/\([^)]*\)/g, '')
+	// replace "A loaf" with "1 loaf"
 	line = line.replace(/^A /i, '1 ')
+	// replacae "400g" with "400 g"
+	line = line.replace(/^(\d+)g/i, '$1 g')
+	// replace "beef such as cow" with "beef, such as cow" so the comma catches
+	line = line.replace(/(\w) (such as)|(like)/, '$1, $2')
+
+	line = FindCompounds(line)
 
 	var parts = line.split(',')
 	var part = parts.shift()
@@ -167,7 +206,7 @@ function ParseIngredient (line, hideorginal = false) {
 		} else { out.ingredient += bit + ' ' }
 	}
 	out.notes = out.notes.toLowerCase()
-	out.ingredient = FormatIngredient(out.ingredient)
+	out.ingredient = FormatIngredient(out.ingredient).replace(COMPOUND_SYMBOL, ' ')
 	out.amount = out.amount ? out.amount : null
 	if (hideorginal) { delete out.orig }
 	return out
