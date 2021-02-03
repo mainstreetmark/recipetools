@@ -116,6 +116,15 @@ function GetUnit (bit) {
 	return false
 }
 
+function PluralUnit (unit, amount = 1) {
+	var units = {
+		cup: 'cups',
+		lb: 'lbs',
+		slice: 'slices'
+	}
+	return amount > 1 ? (units[unit] || unit) : unit
+}
+
 // Foirmalize ingredient name
 // FormatIngredient("cream of tartar") => "Cream of Tartar"
 function FormatIngredient (bit) {
@@ -168,3 +177,4 @@ function ParseIngredient (line, hideorginal = false) {
 // module.exports = ParseIngredient
 exports.ParseIngredient = ParseIngredient
 exports.ValToFrac = ValToFrac
+exports.PluralUnit = PluralUnit
