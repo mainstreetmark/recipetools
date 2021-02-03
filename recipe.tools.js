@@ -45,14 +45,18 @@ function GetModifier (bit) {
 		boneless: ['boneless'],
 		thin: ['thin'],
 		torn: ['torn'],
-		fresh: ['fresh'],
-		grated: ['grateds'],
+		fresh: ['fresh', 'freshly'],
+		ground: ['ground'],
+		grated: ['grated'],
+		minced: ['minced'],
 		toasted: ['toasted'],
 		cool: ['cool'],
 		cold: ['cold'],
 		lukewarm: ['lukewarm'],
 		warm: ['warm'],
-		hot: ['hot']
+		hot: ['hot'],
+		uncooked: ['uncooked'],
+		raw: ['raw']
 	}
 	for (var size in sizes) {
 		if (sizes[size].indexOf(bit.toLowerCase()) > -1) { return size }
@@ -82,7 +86,8 @@ function GetUnit (bit) {
 		head: ['head'],
 		stick: ['stick'],
 		handful: ['handful'],
-		bag: ['bag']
+		bag: ['bag', 'bags'],
+		can: ['can', 'cans']
 	}
 	for (var unit in units) {
 		if (units[unit].indexOf(bit.toLowerCase()) > -1) { return unit }
