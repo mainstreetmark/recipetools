@@ -6,7 +6,6 @@ function ValToFrac (val, plain = false) {
 	let whole = Number(val - rem)
 	rem = (rem * 100) | 0
 	if (!whole) { whole = '' }
-	console.log(val, whole, rem)
 	const vals = {
 		75: '¾',
 		67: '⅔',
