@@ -1,3 +1,22 @@
+function ValToFrac (val, plain = false) {
+	let rem = val % 1
+	let whole = Number(val - rem)
+	rem = (rem * 100) | 0
+	if (!whole) { whole = '' }
+	console.log(val, whole, rem)
+	const vals = {
+		75: '¾',
+		67: '⅔',
+		50: '½',
+		25: '¼',
+		33: '⅓',
+		12: '⅛' // yes, .125 is reporesented as decimal .13, but truncate to .12
+	}
+	var frac = (vals[rem] || rem / 100)
+	if (frac && plain) { frac = ' ' + ConvertFraction(frac) }
+	return whole + frac
+}
+
 // convert unicode fractions to text fractions
 // ConvertFraction('½') => '1/2'
 function ConvertFraction (frac) {
@@ -29,7 +48,7 @@ function GetAmount (amount) {
 	amount = ConvertFraction(amount)
 	if (amount.indexOf('/') > 0) {
 		var fraction = amount.split('/')
-		amount = fraction[0] / fraction[1]
+		amount = +((fraction[0] / fraction[1]).toFixed(2))
 	}
 	if (amount > 0) { return Number(amount) }
 	return false
@@ -76,7 +95,6 @@ function GetUnit (bit) {
 		g: ['gram', 'grams', 'g'],
 		kg: ['kilogram', 'kilograms', 'kg'],
 		mg: ['miligram', 'miligrams', 'mg'],
-		clove: ['clove', 'cloves'],
 		pinch: ['pinch'],
 		sprig: ['sprig', 'sprigs'],
 		qt: ['quart', 'quarts', 'qt', 'qts'],
@@ -144,4 +162,6 @@ function ParseIngredient (line, hideorginal = false) {
 	return out
 }
 
-module.exports = ParseIngredient
+// module.exports = ParseIngredient
+exports.ParseIngredient = ParseIngredient
+exports.ValToFrac = ValToFrac
