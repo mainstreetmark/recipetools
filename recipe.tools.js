@@ -98,28 +98,30 @@ function GetModifier (bit) {
 // GetUnit("pound") => "lb"
 function GetUnit (bit) {
 	var units = {
+		bag: ['bag', 'bags'],
+		bunch: ['bunch'],
+		can: ['can', 'cans'],
+		clove: ['clove', 'cloves'],
 		cup: ['cup', 'cups'],
-		tsp: ['tsp', 'teaspoon', 'teaspoons'],
-		tbsp: ['tbsp', 'tablespoon', 'tablespoons'],
-		lb: ['lb', 'lbs', 'pound', 'pounds'],
-		oz: ['ounces', 'ounce', 'oz'],
+		feet: ['feet', 'foot'], // like sausage casings
 		g: ['gram', 'grams', 'g'],
+		handful: ['handful'],
+		head: ['head'],
 		kg: ['kilogram', 'kilograms', 'kg'],
+		lb: ['lb', 'lbs', 'pound', 'pounds'],
+		leaf: ['leaf', 'leaves'],
 		mg: ['miligram', 'miligrams', 'mg'],
+		oz: ['ounces', 'ounce', 'oz'],
+		packet: ['packet', 'packets'],
 		pinch: ['pinch'],
-		sprig: ['sprig', 'sprigs'],
 		qt: ['quart', 'quarts', 'qt', 'qts'],
 		slice: ['slice', 'slices'],
-		bunch: ['bunch'],
+		sprig: ['sprig', 'sprigs'],
 		stalk: ['stalk'],
-		head: ['head'],
 		stick: ['stick'],
-		handful: ['handful'],
-		bag: ['bag', 'bags'],
-		can: ['can', 'cans'],
-		feet: ['feet', 'foot'], // like sausage casings
-		leaf: ['leaf', 'leaves'],
-		clove: ['clove', 'cloves']
+		tsp: ['tsp', 'teaspoon', 'teaspoons'],
+		tbsp: ['tbsp', 'tablespoon', 'tablespoons'],
+		sheet: ['sheet', 'sheets']
 	}
 	for (var unit in units) {
 		if (units[unit].indexOf(bit.toLowerCase()) > -1) { return unit }
@@ -156,7 +158,7 @@ function FormatIngredient (bit) {
 // such as 'ground', which is a modifier or 'leaf' which is a unit.
 // FindCompounds("ground beef") => "ground%%beef" (which can later be replaced back wiht a space character)
 function FindCompounds (line) {
-	var compounds = ['ground beef', 'bay leaf', 'bay leaves']
+	var compounds = ['ground beef', 'bay leaf', 'bay leaves', 'loosely packed']
 	// TODO - maybe use map() for this work
 	for (var c of compounds) {
 		line = line.replace(new RegExp(c, 'gi'), c.replace(' ', COMPOUND_SYMBOL))
