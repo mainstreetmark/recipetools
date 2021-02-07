@@ -86,7 +86,10 @@ function GetModifier (bit) {
 		chopped: ['chopped'],
 		homemade: ['homemade'],
 		'store-bought': ['store-bought'],
-		picked: ['picked']
+		picked: ['picked'],
+		peeled: ['peeled'],
+		cubed: ['cubed'],
+		shredded: ['shredded']
 	}
 	for (var size in sizes) {
 		if (sizes[size].indexOf(bit.toLowerCase()) > -1) { return size }
@@ -113,6 +116,7 @@ function GetUnit (bit) {
 		mg: ['miligram', 'miligrams', 'mg'],
 		oz: ['ounces', 'ounce', 'oz'],
 		packet: ['packet', 'packets'],
+		pkg: ['package', 'pkg', 'packages'],
 		pinch: ['pinch'],
 		qt: ['quart', 'quarts', 'qt', 'qts'],
 		slice: ['slice', 'slices'],
@@ -144,19 +148,19 @@ function PluralUnit (unit, amount = 1) {
 	return amount > 1 ? (units[unit] || unit) : unit
 }
 
-// Foirmalize ingredient name
+// Formalize ingredient name
 // FormatIngredient("cream of tartar") => "Cream of Tartar"
 function FormatIngredient (bit) {
 	var out = bit.trim().replace(/\b\w/g, l => l.toUpperCase())
 	var lower = ['Or ', 'And ', 'Of ', 'To ', 'From ', 'For ']
 	for (var l of lower) { out = out.replace(l, l.toLowerCase()) }
-	out = out.replace(/^of /, '').replace(/^or /, '')
+	out = out.replace(/^of /, '').replace(/^or /, '').replace(/^and /, '')
 	return out
 }
 
 // Combines compound ingredient names, so they don't get split up.  ONLY if some of their parts would get replaced by other bits,
 // such as 'ground', which is a modifier or 'leaf' which is a unit.
-// FindCompounds("ground beef") => "ground%%beef" (which can later be replaced back wiht a space character)
+// FindCompounds("ground beef") => "ground%%beef" (which can later be replaced back with a space character)
 function FindCompounds (line) {
 	var compounds = ['ground beef', 'bay leaf', 'bay leaves', 'loosely packed']
 	// TODO - maybe use map() for this work
@@ -188,8 +192,8 @@ function ParseIngredient (line, hideorginal = false) {
 	// replacae "400g" with "400 g"
 	line = line.replace(/^(\d+)g/i, '$1 g')
 	// replace "beef such as cow" with "beef, such as cow" so the comma catches
-	line = line.replace(/(\w) (such as)|(like)/, '$1, $2')
-
+	line = line.replace(/(\w) (such as|like|for)/, '$1, $2')
+	console.log(line)
 	line = FindCompounds(line)
 
 	var parts = line.split(',')
