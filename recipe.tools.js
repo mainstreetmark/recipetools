@@ -2,6 +2,7 @@ const COMPOUND_SYMBOL = '!&!'
 
 let GROUP = '' // a global group tracker
 
+
 // Convert decimal values to fractions
 // ValToFrac(0.33) => '⅓'
 // ValToFrac(0.33, true) => '1/3'
