@@ -162,7 +162,7 @@ function FormatIngredient (bit) {
 // such as 'ground', which is a modifier or 'leaf' which is a unit.
 // FindCompounds("ground beef") => "ground%%beef" (which can later be replaced back with a space character)
 function FindCompounds (line) {
-	var compounds = ['ground beef', 'bay leaf', 'bay leaves', 'loosely packed']
+	var compounds = ['ground beef', 'bay leaf', 'bay leaves', 'loosely packed', 'hot sauce']
 	// TODO - maybe use map() for this work
 	for (var c of compounds) {
 		line = line.replace(new RegExp(c, 'gi'), c.replace(' ', COMPOUND_SYMBOL))
@@ -182,19 +182,34 @@ function ParseIngredient (line, hideorginal = false) {
 	}
 	line = line.trim()
 	out.orig = line
+	out.optional = line.indexOf('(optional') > 0
 
-	// promote (optional) to something that sticks around
+	// promote "(optional)"" to something that sticks around
 	line = line.replace('(optional)', ', optional')
-	// remove parenthases
-	line = line.replace(/\([^)]*\)/g, '')
-	// replace "A loaf" with "1 loaf"
+	// change weird chars into commas
+	line = line.replace(/[;]/, ',')
+	// remove parenthases and contents with alternate weights ex: (5grams)
+	line = line.replace(/\((\d[^)]*)\)/g, '')
+	// remove the "(about a pound)" weight alternates
+	line = line.replace(/\(about.*\)/, '')
+	// remove parenthases, keeping whats inside  ex: "(as needed)" -> ",as needed"
+	line = line.replace(/\(([^)]*)\)/g, ',$1,')
+	// replace "A loaf" with "1 loaf", so it can parse
 	line = line.replace(/^A /i, '1 ')
-	// replacae "400g" with "400 g"
+	// replacae "400g" with "400 g", since every other unit has spaces
 	line = line.replace(/^(\d+)g/i, '$1 g')
 	// replace "beef such as cow" with "beef, such as cow" so the comma catches
 	line = line.replace(/(\w) (such as|like|for)/, '$1, $2')
 	console.log(line)
 	line = FindCompounds(line)
+
+	// this is a gruping oof ingredients
+	if (line.charAt(line.length - 1) === ':') {
+		return {
+			ingredient: '___' + line.slice(0, -1) + '__',
+			group: line
+		}
+	}
 
 	var parts = line.split(',')
 	var part = parts.shift()
@@ -215,6 +230,7 @@ function ParseIngredient (line, hideorginal = false) {
 	out.ingredient = FormatIngredient(out.ingredient).replace(COMPOUND_SYMBOL, ' ')
 	out.amount = out.amount ? out.amount : null
 	if (hideorginal) { delete out.orig }
+	console.log(out)
 	return out
 }
 
