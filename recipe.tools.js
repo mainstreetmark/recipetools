@@ -1,5 +1,7 @@
 const COMPOUND_SYMBOL = '!&!'
 
+let GROUP = '' // a global group tracker
+
 // Convert decimal values to fractions
 // ValToFrac(0.33) => '⅓'
 // ValToFrac(0.33, true) => '1/3'
@@ -84,6 +86,7 @@ function GetModifier (bit) {
 		ripe: ['ripe'],
 		cooked: ['cooked'],
 		chopped: ['chopped'],
+		finely: ['fine', 'finely'],
 		homemade: ['homemade'],
 		'store-bought': ['store-bought'],
 		picked: ['picked'],
@@ -185,11 +188,11 @@ function ParseIngredient (line, hideorginal = false) {
 	out.optional = line.indexOf('(optional') > 0
 
 	// promote "(optional)"" to something that sticks around
-	line = line.replace('(optional)', ', optional')
+	line = line.replace('(optional)', '')
 	// change weird chars into commas
 	line = line.replace(/[;]/, ',')
-	// remove parenthases and contents with alternate weights ex: (5grams)
-	line = line.replace(/\((\d[^)]*)\)/g, '')
+	// remove parenthases and contents with alternate weights ex: (5grams), (.25 ounce)
+	line = line.replace(/\(([\d.][^)]*)\)/g, '')
 	// remove the "(about a pound)" weight alternates
 	line = line.replace(/\(about.*\)/, '')
 	// remove parenthases, keeping whats inside  ex: "(as needed)" -> ",as needed"
@@ -200,28 +203,25 @@ function ParseIngredient (line, hideorginal = false) {
 	line = line.replace(/^(\d+)g/i, '$1 g')
 	// replace "beef such as cow" with "beef, such as cow" so the comma catches
 	line = line.replace(/(\w) (such as|like|for)/, '$1, $2')
-	console.log(line)
 	line = FindCompounds(line)
 
 	// this is a gruping oof ingredients
 	if (line.charAt(line.length - 1) === ':') {
-		return {
-			ingredient: '___' + line.slice(0, -1) + '__',
-			group: line
-		}
+		GROUP = line.slice(0, -1)
+		return false
 	}
 
 	var parts = line.split(',')
 	var part = parts.shift()
 	if (parts.length > 0) { out.notes = parts.join(' ').trim() }
 
-	var bits = part.split(' ')
+	var bits = part.split(/[\s]/) // split on whitespace
 	for (var bit of bits) {
 		if (GetAmount(bit) && !foundamount) {
 			out.amount += GetAmount(bit)
 		} else if (GetUnit(bit)) {
 			out.unit = GetUnit(bit)
-			foundamount = true
+			foundamount = true // done parsing amounts
 		} else if (GetModifier(bit)) {
 			out.notes = out.notes.length ? GetModifier(bit) + ', ' + out.notes : GetModifier(bit)
 		} else { out.ingredient += bit + ' ' }
@@ -230,7 +230,7 @@ function ParseIngredient (line, hideorginal = false) {
 	out.ingredient = FormatIngredient(out.ingredient).replace(COMPOUND_SYMBOL, ' ')
 	out.amount = out.amount ? out.amount : null
 	if (hideorginal) { delete out.orig }
-	console.log(out)
+	if (GROUP) { out.group = GROUP }
 	return out
 }
 
