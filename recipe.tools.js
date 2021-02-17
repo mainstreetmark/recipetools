@@ -55,6 +55,7 @@ function ConvertFraction (frac) {
 	}
 	return uni[frac] || frac
 }
+
 // Convert amounts to reals
 // GetAmount("1/2") => 0.5
 function GetAmount (amount) {
