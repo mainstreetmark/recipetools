@@ -68,6 +68,7 @@ function GetAmount (amount) {
 	return false
 }
 
+// Find all the standard regular modifiers, like "large"
 function GetModifier (bit) {
 	var sizes = {
 		large: ['Large', 'large', 'lg'],
@@ -85,6 +86,7 @@ function GetModifier (bit) {
 		toasted: ['toasted'],
 		cool: ['cool'],
 		cold: ['cold'],
+		metled: ['melted'],
 		lukewarm: ['lukewarm'],
 		warm: ['warm'],
 		hot: ['hot'],
@@ -197,6 +199,10 @@ function ParseIngredient (line, hideorginal = false) {
 
 	// promote "(optional)"" to something that sticks around
 	line = line.replace('(optional)', '')
+	// look for the "..to taste" modifier and make sure it has a comma for parsing
+	line = line.replace('to taste', ', to taste')
+	// get rid of "bla bla - bla bla"
+	line = line.replace(' - ', ',')
 	// change weird chars into commas
 	line = line.replace(/[;]/, ',')
 	// remove parenthases and contents with alternate weights ex: (5grams), (.25 ounce)
