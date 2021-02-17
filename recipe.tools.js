@@ -1,7 +1,13 @@
+/**
+ * RECIPE TOOLS
+ *
+ * A collection of dumb tools t help recipes
+ *
+ */
+
 const COMPOUND_SYMBOL = '!&!'
 
 let GROUP = '' // a global group tracker
-
 
 // Convert decimal values to fractions
 // ValToFrac(0.33) => '⅓'
