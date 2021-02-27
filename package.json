@@ -1,0 +1,19 @@
+{
+  "name": "recipetools",
+  "version": "0.0.1",
+  "description": "tools to help parse recipe data",
+  "main": "recipe.tools.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mainstreetmark/recipetools.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mainstreetmark/recipetools/issues"
+  },
+  "homepage": "https://github.com/mainstreetmark/recipetools#readme"
+}
